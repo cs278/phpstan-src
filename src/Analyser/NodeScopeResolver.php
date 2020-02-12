@@ -1818,8 +1818,8 @@ class NodeScopeResolver
 				|| $expr->var instanceof PropertyFetch
 				|| $expr->var instanceof StaticPropertyFetch
 			) {
-				$expressionType = $scope->getType($expr);
-				if (count(TypeUtils::getConstantScalars($expressionType)) > 0 || $expressionType instanceof IntegerRangeType) {
+				$expressionType = $scope->getType($expr->var);
+				if (count(TypeUtils::getConstantScalars($expressionType)) > 0 || count(TypeUtils::getAnyIntegerRangeTypes($expressionType)) > 0) {
 					$newExpr = $expr;
 					if ($expr instanceof Expr\PostInc) {
 						$newExpr = new Expr\PreInc($expr->var);

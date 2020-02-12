@@ -64,6 +64,15 @@ class TypeUtils
 		return self::map(ArrayType::class, $type, true, false);
 	}
 
+	/**
+	 * @param \PHPStan\Type\Type $type
+	 * @return \PHPStan\Type\IntegerRangeType[]
+	 */
+	public static function getAnyIntegerRangeTypes(Type $type): array
+	{
+		return self::map(IntegerRangeType::class, $type, true, false);
+	}
+
 	public static function generalizeType(Type $type): Type
 	{
 		if ($type instanceof ConstantType) {

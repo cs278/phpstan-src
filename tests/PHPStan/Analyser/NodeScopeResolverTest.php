@@ -9806,6 +9806,11 @@ class NodeScopeResolverTest extends \PHPStan\Testing\TestCase
 		return $this->gatherAssertTypes(__DIR__ . '/data/ext-ds.php');
 	}
 
+	public function dataBug2954(): array
+	{
+		return $this->gatherAssertTypes(__DIR__ . '/data/bug-2954.php');
+	}
+
 	/**
 	 * @dataProvider dataBug2574
 	 * @dataProvider dataBug2577
@@ -9839,6 +9844,7 @@ class NodeScopeResolverTest extends \PHPStan\Testing\TestCase
 	 * @dataProvider dataTypeChangeAfterArrayAccessAssignment
 	 * @dataProvider dataIteratorToArray
 	 * @dataProvider dataExtDs
+	 * @dataProvider dataBug2954
 	 * @param ConstantStringType $expectedType
 	 * @param Type $actualType
 	 */
