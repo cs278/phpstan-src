@@ -2,8 +2,80 @@
 
 namespace SetTypeTypeSpecifying;
 
+use Bug2677\P;
 use stdClass;
 use function PHPStan\Testing\assertType;
+use function assert;
+
+function doDynamicString(string $input, string $castTo): mixed
+{
+	settype($input, $castTo);
+	assertType('array{string}|bool|float|int|stdClass|string|null', $input);
+
+	if ($castTo !== 'string') {
+		settype($input, $castTo);
+		assertType('array|bool|float|int|stdClass|string|null', $input);
+	}
+}
+
+function doDynamicMixed(mixed $input, string $castTo): mixed
+{
+	settype($input, $castTo);
+	assertType('array<mixed, mixed>|bool|float|int|stdClass|string|null', $input);
+
+	if ($castTo !== 'string') {
+		settype($input, $castTo);
+		assertType('array|bool|float|int|stdClass|string|null', $input);
+	}
+}
+
+/** @param 'string'|'not_a_type'|'null'|'bool'|'int' $castTo */
+function doDynamicMixed2(mixed $m, string $s, bool $b, int $i, float $f, array $a, object $o, string $castTo): mixed
+{
+	settype($m, $castTo);
+	assertType('*ERROR*', $m);
+
+	settype($s, $castTo);
+	assertType('bool|int|string|null', $s);
+
+	settype($b, $castTo);
+	assertType("0|1|''|'1'|bool|null", $b);
+
+	settype($i, $castTo);
+	assertType('bool|int|(lowercase-string&numeric-string&uppercase-string)|null', $i); // @todo WTF
+
+	settype($f, $castTo);
+	assertType('bool|int|(numeric-string&uppercase-string)|null', $f); // @todo WTF
+
+	settype($a, $castTo);
+	assertType('*ERROR*', $a);
+
+	settype($o, $castTo);
+	assertType('*ERROR*', $o);
+
+	if ($castTo !== 'not_a_type') {
+		settype($m, $castTo);
+		assertType('*ERROR*', $m);
+
+		settype($s, $castTo);
+		assertType('bool|int|string|null', $s);
+
+		settype($b, $castTo);
+		assertType("0|1|''|'0'|'1'|bool|null", $b); // @todo Where does 0 come from?
+
+		settype($i, $castTo);
+		assertType("''|bool|int|(lowercase-string&numeric-string&uppercase-string)|null", $i); // @todo WTF
+
+		settype($f, $castTo);
+		assertType("''|bool|int|(numeric-string&uppercase-string)|null", $f); // @todo WTF
+
+		settype($a, $castTo);
+		assertType('*ERROR*', $a);
+
+		settype($o, $castTo);
+		assertType('*ERROR*', $o);
+	}
+}
 
 function doString(string $s, int $i, float $f, array $a, object $o)
 {
