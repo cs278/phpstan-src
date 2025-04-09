@@ -7,9 +7,11 @@ use function PHPStan\Testing\assertType;
 class Foo
 {
 
-	public function special(): void
+	public function constant(): void
 	{
 		assertType('array{}', array_pad([], 0, true));
+		assertType('array{true, true}', array_pad([], 2, true));
+		assertType('array{true, false, false}', array_pad([true], 3, false));
 	}
 
 	/** @param list<int> $input */

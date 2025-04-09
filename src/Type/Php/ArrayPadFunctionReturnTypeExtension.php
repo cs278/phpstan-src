@@ -10,6 +10,7 @@ use PHPStan\Type\Accessory\AccessoryArrayListType;
 use PHPStan\Type\Accessory\NonEmptyArrayType;
 use PHPStan\Type\ArrayType;
 use PHPStan\Type\Constant\ConstantArrayType;
+use PHPStan\Type\Constant\ConstantArrayTypeBuilder;
 use PHPStan\Type\Constant\ConstantIntegerType;
 use PHPStan\Type\DynamicFunctionReturnTypeExtension;
 use PHPStan\Type\IntegerType;
@@ -46,6 +47,27 @@ final class ArrayPadFunctionReturnTypeExtension implements DynamicFunctionReturn
 		// array_pad([], 0, $value)
 		if ($isResultEmpty->yes()) {
 			return new ConstantArrayType([], []);
+		}
+
+		var_dump($lengthType->isConstantScalarValue()->describe());
+
+		if ($isInputNonEmpty->no() && $lengthType->isConstantScalarValue()->yes()) {
+			$result = [];
+
+			foreach ($lengthType->getConstantScalarValues() as $value) {
+				var_dump($value);
+				$arrayBuilder = ConstantArrayTypeBuilder::createEmpty();
+				for ($i = 0; $i < $value; $i++) {
+					$arrayBuilder->setOffsetValueType(
+						new ConstantIntegerType($i),
+						$valueType,
+					);
+				}
+
+				$result[] = $arrayBuilder->getArray();
+			}
+
+			return TypeCombinator::union(...$result);
 		}
 
 		// Padding is always a list.
